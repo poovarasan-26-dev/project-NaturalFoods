@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ScrollStory from '../components/ScrollStory';
-import { fetchStorefrontSummary, sendMessage } from '../lib/api';
+import { fetchStorefrontSummary, sendMessage, apiRequest } from '../lib/api';
+import { resolveImage } from '../lib/utils';
 import { ArrowRight, ShoppingCart, MapPin, Mail, Phone, Clock, Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const initialFruits = [];
@@ -57,8 +58,7 @@ const [vegetableQtys, setVegetableQtys] = useState({});
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/dashboard/storefront/products/?_=' + Date.now())
-      .then(res => res.ok ? res.json() : [])
+    apiRequest('/api/dashboard/storefront/products/', { method: 'GET' }).catch(() => [])
       .then(products => {
         if (cancelled || !products.length) return;
         const { map, fruitsList, nutritionsList, vegetablesList } = mapBackendToFrontend(products);
@@ -199,7 +199,7 @@ const [vegetableQtys, setVegetableQtys] = useState({});
                 <div key={fruit.id} className={`fruit-card ${fruit.stock === 'Out of Stock' ? 'fruit-card-out' : ''}`}>
                   <div className="fruit-card-inner">
                     <div className="fruit-card-top">
-                      <span className="fruit-card-icon">{fruit.image ? <img src={fruit.image} alt="" className="fruit-card-inline-img" /> : fruit.icon}</span>
+                      <span className="fruit-card-icon">{fruit.image ? <img src={resolveImage(fruit.image)} alt="" className="fruit-card-inline-img" /> : fruit.icon}</span>
                     </div>
                     <h3 className="fruit-card-name">{fruit.name}</h3>
                     <div className="fruit-card-price-row">
@@ -223,9 +223,9 @@ const [vegetableQtys, setVegetableQtys] = useState({});
                       </div>
                       <button
                         className="fruit-card-shop"
-                        onClick={e => {
+                          onClick={e => {
                           e.stopPropagation();
-                          onAddToCart({ id: fruit.id, name: fruit.name, icon: fruit.icon, image: fruit.image, price: total, qty, backendProductId: backendProductMap[fruit.name.toLowerCase()] || null });
+                          onAddToCart({ id: fruit.id, name: fruit.name, icon: fruit.icon, image: resolveImage(fruit.image), price: total, qty, backendProductId: backendProductMap[fruit.name.toLowerCase()] || null });
                         }}
                         title="Add Item"
                       >

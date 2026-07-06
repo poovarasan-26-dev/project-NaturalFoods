@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { ArrowRight, Star, ShoppingCart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { apiRequest } from '../lib/api';
+import { resolveImage } from '../lib/utils';
 import FruitCardModal from '../components/FruitCardModal';
 
 const Fruits = ({ onAddToCart, authToken }) => {
@@ -40,11 +42,7 @@ const Fruits = ({ onAddToCart, authToken }) => {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    fetch('/api/dashboard/storefront/products/?_=' + Date.now())
-      .then(res => {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
+    apiRequest('/api/dashboard/storefront/products/', { method: 'GET' })
       .then(products => {
         if (cancelled) return;
         const { map, fruitsList } = mapBackendToFrontend(products);
@@ -106,7 +104,7 @@ const Fruits = ({ onAddToCart, authToken }) => {
                 >
                   <div className="fruit-card-inner" onClick={() => setSelectedFruit(fruit)}>
                     <div className="fruit-card-top">
-                      <span className="fruit-card-icon">{fruit.image ? <img src={fruit.image} alt="" className="fruit-card-inline-img" /> : '🍎'}</span>
+                      <span className="fruit-card-icon">{fruit.image ? <img src={resolveImage(fruit.image)} alt="" className="fruit-card-inline-img" /> : '🍎'}</span>
                     </div>
                     <h3 className="fruit-card-name">{fruit.name}</h3>
                     <div className="fruit-card-price-row">
@@ -130,13 +128,13 @@ const Fruits = ({ onAddToCart, authToken }) => {
                       </div>
                       <button
                         className="fruit-card-shop"
-                        onClick={e => {
+                          onClick={e => {
                           e.stopPropagation();
                           onAddToCart({
                             id: fruit.id,
                             name: fruit.name,
                             icon: fruit.image ? null : '🍎',
-                            image: fruit.image,
+                            image: resolveImage(fruit.image),
                             price: total,
                             qty: qty,
                             backendProductId: backendProductMap[fruit.name.toLowerCase()] || null
