@@ -1,5 +1,4 @@
 .git-backups/
-backend/
 __pycache__/
 *.py[cod]
 *.so
