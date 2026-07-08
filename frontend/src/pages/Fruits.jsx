@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { apiRequest } from '../lib/api';
 import { resolveImage } from '../lib/utils';
 import FruitCardModal from '../components/FruitCardModal';
+import { apiRequest } from '../lib/api';
 
 const Fruits = ({ onAddToCart, authToken }) => {
   const navigate = useNavigate();
