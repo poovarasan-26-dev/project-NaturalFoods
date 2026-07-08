@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ScrollStory from '../components/ScrollStory';
-import { fetchStorefrontSummary, sendMessage } from '../lib/api';
+import { fetchStorefrontSummary, sendMessage, apiRequest } from '../lib/api';
 import { ArrowRight, ShoppingCart, MapPin, Mail, Phone, Clock, Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const initialFruits = [];
@@ -57,11 +57,11 @@ const [vegetableQtys, setVegetableQtys] = useState({});
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/dashboard/storefront/products/?_=' + Date.now())
-      .then(res => res.ok ? res.json() : [])
+    apiRequest('/api/dashboard/storefront/products/', { method: 'GET' })
       .then(products => {
-        if (cancelled || !products.length) return;
-        const { map, fruitsList, nutritionsList, vegetablesList } = mapBackendToFrontend(products);
+        const productList = Array.isArray(products) ? products : [];
+        if (cancelled || !productList.length) return;
+        const { map, fruitsList, nutritionsList, vegetablesList } = mapBackendToFrontend(productList);
         setBackendProductMap(map);
         if (fruitsList.length) {
           setFruits(fruitsList);
