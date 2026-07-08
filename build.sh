@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -o errexit
+
+pip install -r requirements.txt
+
+python manage.py migrate --no-input
+
+python manage.py ensureadmin
+
+python manage.py seed_data 2>/dev/null || true
+
+python manage.py collectstatic --no-input --clear
