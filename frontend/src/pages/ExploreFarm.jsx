@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { resolveImage } from '../lib/utils';
+import { apiRequest } from '../lib/api';
 import { ArrowLeft, Leaf, ShoppingBag } from 'lucide-react';
 
 const categoryConfig = {
@@ -93,10 +94,9 @@ const ExploreFarm = () => {
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/dashboard/storefront/products/?_=' + Date.now())
-      .then(res => res.ok ? res.json() : [])
+    apiRequest('/api/dashboard/storefront/products/', { method: 'GET' })
       .then(data => {
-        if (!cancelled) { setProducts(data); setLoading(false); }
+        if (!cancelled) { setProducts(Array.isArray(data) ? data : []); setLoading(false); }
       })
       .catch(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };

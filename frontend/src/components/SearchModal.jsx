@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
 import { resolveImage } from '../lib/utils';
+import { apiRequest } from '../lib/api';
 
 const iconByCategory = {
   Fruits: '🍎',
@@ -32,11 +33,10 @@ const SearchModal = ({ isOpen, onClose }) => {
     if (!isOpen) return;
     let cancelled = false;
     setLoading(true);
-    fetch('/api/dashboard/storefront/products/?_=' + Date.now())
-      .then(res => res.ok ? res.json() : [])
+    apiRequest('/api/dashboard/storefront/products/', { method: 'GET' })
       .then(data => {
         if (!cancelled) {
-          setProducts(data?.length ? data : []);
+          setProducts(Array.isArray(data) ? data : []);
         }
       })
       .catch(() => { if (!cancelled) setProducts([]); })
