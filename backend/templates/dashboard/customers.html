@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Customers - Natural Foods Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Customers</h1>
+        <p class="page-subtitle">Manage your customer database.</p>
+    </div>
+    <a href="{% url 'dash_customer_add' %}" class="btn btn-primary-custom">
+        <i class="bi bi-plus-lg"></i> Add Customer
+    </a>
+</div>
+
+<!-- Search -->
+<div class="card-custom mb-4">
+    <div class="card-custom-body">
+        <form method="get" class="filter-form">
+            <div class="row g-3 align-items-end">
+                <div="col-md-8">
+                    <div class="search-input-group">
+                        <i class="bi bi-search"></i>
+                        <input type="text" name="search" class="form-control" placeholder="Search by name, email or phone..." value="{{ search_query }}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary-custom w-100">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Customers Table -->
+<div class="card-custom">
+    <div class="card-custom-body p-0">
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                {% if customer.profile_image %}
+                                <img src="{{ customer.profile_image.url }}" alt="{{ customer.full_name }}" class="table-img rounded-circle">
+                                {% else %}
+                                <div class="table-img-placeholder rounded-circle"><i class="bi bi-person"></i></div>
+                                {% endif %}
+                                <span>{{ customer.full_name|truncatechars:30 }}</span>
+                            </div>
+                        </td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.phone|default:"N/A" }}</td>
+                        <td>
+                            {% if customer.is_active %}
+                            <span class="status-badge status-active">Active</span>
+                            {% else %}
+                            <span class="status-badge status-inactive">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ customer.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <div class="action-btns">
+                                <a href="{% url 'dash_customer_edit' customer.pk %}" class="btn-action btn-edit" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form method="post" action="{% url 'dash_customer_delete' customer.pk %}" class="d-inline" onsubmit="return confirm('Delete this customer?')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-action btn-delete" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="empty-state">
+                                <i class="bi bi-people"></i>
+                                <h5>No Customers Found</h5>
+                                <p>Customers will appear here once they register.</p>
+                                <a href="{% url 'dash_customer_add' %}" class="btn btn-primary-custom">Add Customer</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if is_paginated %}
+<div class="pagination-wrapper">
+    <nav>
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}"><i class="bi bi-chevron-left"></i></a></li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}&search={{ search_query }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search_query }}"><i class="bi bi-chevron-right"></i></a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+{% endblock %}

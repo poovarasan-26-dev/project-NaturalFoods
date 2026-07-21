@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Contact Messages - Natural Foods Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Contact Messages</h1>
+        <p class="page-subtitle">Messages from the contact form.</p>
+    </div>
+    <div class="page-actions">
+        {% if unread_messages %}
+        <form method="post" action="{% url 'dash_messages_mark_all' %}" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary">
+                <i class="bi bi-check-all"></i> Mark All Read ({{ unread_messages }})
+            </button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card-custom mb-4">
+    <div class="card-custom-body">
+        <form method="get" class="filter-form">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <div class="search-input-group">
+                        <i class="bi bi-search"></i>
+                        <input type="text" name="search" class="form-control" placeholder="Search messages..." value="{{ search_query }}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        <option value="unread" {% if selected_status == 'unread' %}selected{% endif %}>Unread</option>
+                        <option value="read" {% if selected_status == 'read' %}selected{% endif %}>Read</option>
+                        <option value="replied" {% if selected_status == 'replied' %}selected{% endif %}>Replied</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary-custom w-100">
+                        <i class="bi bi-funnel"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Messages Table -->
+<div class="card-custom">
+    <div class="card-custom-body p-0">
+        <div class="table-responsive">
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for msg in messages_list %}
+                    <tr class="{% if msg.status == 'unread' %}row-unread{% endif %}">
+                        <td>
+                            {% if msg.status == 'unread' %}
+                            <span class="unread-dot"></span>
+                            {% endif %}
+                        </td>
+                        <td><strong>{{ msg.full_name|truncatechars:25 }}</strong></td>
+                        <td>{{ msg.email }}</td>
+                        <td>{{ msg.subject|truncatechars:30 }}</td>
+                        <td>{{ msg.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if msg.status == 'unread' %}
+                            <span class="status-badge status-pending">Unread</span>
+                            {% elif msg.status == 'read' %}
+                            <span class="status-badge status-info">Read</span>
+                            {% else %}
+                            <span class="status-badge status-active">Replied</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-btns">
+                                <a href="{% url 'dash_message_detail' msg.pk %}" class="btn-action btn-view" title="View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <form method="post" action="{% url 'dash_message_delete' msg.pk %}" class="d-inline" onsubmit="return confirm('Delete this message?')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-action btn-delete" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <div class="empty-state">
+                                <i class="bi bi-envelope-open"></i>
+                                <h5>No Messages</h5>
+                                <p>Contact form messages will appear here.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if is_paginated %}
+<div class="pagination-wrapper">
+    <nav>
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search_query }}&status={{ selected_status }}"><i class="bi bi-chevron-left"></i></a></li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}&search={{ search_query }}&status={{ selected_status }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search_query }}&status={{ selected_status }}"><i class="bi bi-chevron-right"></i></a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+{% endblock %}

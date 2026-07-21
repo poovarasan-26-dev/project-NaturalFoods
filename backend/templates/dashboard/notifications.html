@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Notifications - Natural Foods Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Notifications</h1>
+        <p class="page-subtitle">Stay updated with your store activity.</p>
+    </div>
+    <div class="page-actions">
+        <form method="post" action="{% url 'dash_notifications_mark_all' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary">
+                <i class="bi bi-check-all"></i> Mark All Read
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="card-custom">
+    <div class="card-custom-body">
+        <div class="notification-list">
+            {% for notif in notifications_list %}
+            <div class="notification-item {% if not notif.is_read %}notification-unread{% endif %}" data-id="{{ notif.id }}">
+                <div class="notification-icon">
+                    {% if notif.notification_type == 'product' %}
+                    <div class="notif-icon notif-product"><i class="bi bi-box-seam"></i></div>
+                    {% elif notif.notification_type == 'order' %}
+                    <div class="notif-icon notif-order"><i class="bi bi-cart3"></i></div>
+                    {% elif notif.notification_type == 'customer' %}
+                    <div class="notif-icon notif-customer"><i class="bi bi-person-plus"></i></div>
+                    {% elif notif.notification_type == 'message' %}
+                    <div class="notif-icon notif-message"><i class="bi bi-envelope"></i></div>
+                    {% else %}
+                    <div class="notif-icon notif-system"><i class="bi bi-bell"></i></div>
+                    {% endif %}
+                </div>
+                <div class="notification-content">
+                    <h6>{{ notif.title }}</h6>
+                    <p>{{ notif.description|truncatechars:120 }}</p>
+                    <small class="text-muted">{{ notif.created_at|timesince }} ago</small>
+                </div>
+                <div class="notification-actions">
+                    {% if not notif.is_read %}
+                    <form method="post" action="{% url 'dash_notification_read' notif.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-action btn-view" title="Mark as read">
+                            <i class="bi bi-check-lg"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state py-5">
+                <i class="bi bi-bell-slash"></i>
+                <h5>No Notifications</h5>
+                <p>You're all caught up!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% if is_paginated %}
+<div class="pagination-wrapper">
+    <nav>
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}"><i class="bi bi-chevron-left"></i></a></li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}"><i class="bi bi-chevron-right"></i></a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endif %}
+{% endblock %}

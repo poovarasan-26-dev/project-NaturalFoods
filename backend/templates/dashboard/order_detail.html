@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Order {{ order.order_id }} - Natural Foods Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Order {{ order.order_id }}</h1>
+        <p class="page-subtitle">Order details and status management.</p>
+    </div>
+    <a href="{% url 'dash_orders' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Orders
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card-custom">
+            <div class="card-custom-header">
+                <h5><i class="bi bi-info-circle"></i> Order Information</h5>
+            </div>
+            <div class="card-custom-body">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Order ID</span>
+                        <span class="detail-value">{{ order.order_id }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Customer</span>
+                        <span class="detail-value">{{ order.customer.full_name }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">{{ order.customer.email }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Phone</span>
+                        <span class="detail-value">{{ order.customer.phone|default:"N/A" }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Total Amount</span>
+                        <span class="detail-value fw-bold text-success">₹{{ order.total_amount }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Order Date</span>
+                        <span class="detail-value">{{ order.created_at|date:"M d, Y H:i" }}</span>
+                    </div>
+                </div>
+                {% if order.shipping_address %}
+                <div class="mt-3">
+                    <span class="detail-label">Shipping Address</span>
+                    <p class="mt-1">{{ order.shipping_address }}</p>
+                </div>
+                {% endif %}
+                {% if order.notes %}
+                <div class="mt-3">
+                    <span class="detail-label">Notes</span>
+                    <p class="mt-1">{{ order.notes }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if order.items.all %}
+        <div class="card-custom mt-4">
+            <div class="card-custom-header">
+                <h5><i class="bi bi-bag"></i> Order Items</h5>
+            </div>
+            <div class="card-custom-body p-0">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>₹{{ item.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td><strong>₹{{ item.subtotal }}</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card-custom">
+            <div class="card-custom-header">
+                <h5><i class="bi bi-arrow-repeat"></i> Update Status</h5>
+            </div>
+            <div class="card-custom-body">
+                <div class="current-status mb-3">
+                    <span class="detail-label">Current Status</span>
+                    <div class="mt-1">
+                        {% if order.status == 'delivered' %}
+                        <span class="status-badge status-active fs-6">Delivered</span>
+                        {% elif order.status == 'cancelled' %}
+                        <span class="status-badge status-inactive fs-6">Cancelled</span>
+                        {% elif order.status == 'processing' %}
+                        <span class="status-badge status-warning fs-6">Processing</span>
+                        {% elif order.status == 'shipped' %}
+                        <span class="status-badge status-info fs-6">Shipped</span>
+                        {% else %}
+                        <span class="status-badge status-pending fs-6">Pending</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <form method="post" action="{% url 'dash_order_update' order.pk %}">
+                    {% csrf_token %}
+                    <div class="form-group mb-3">
+                        <label class="form-label">New Status</label>
+                        <select name="status" class="form-select">
+                            {% for value, label in order.STATUS_CHOICES %}
+                            <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary-custom w-100">
+                        <i class="bi bi-check-lg"></i> Update Status
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

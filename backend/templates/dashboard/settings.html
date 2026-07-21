@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Settings - Natural Foods Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Settings</h1>
+        <p class="page-subtitle">Configure your website settings.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card-custom">
+            <div class="card-custom-header">
+                <h5><i class="bi bi-gear"></i> General Settings</h5>
+            </div>
+            <div class="card-custom-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Website Name</label>
+                                {{ form.site_name }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Contact Email</label>
+                                {{ form.site_email }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Phone</label>
+                                {{ form.site_phone }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Website Logo</label>
+                                {% if site_settings.site_logo %}
+                                <div class="current-image mb-2">
+                                    <img src="{{ site_settings.site_logo.url }}" alt="Logo" style="max-height:60px">
+                                </div>
+                                {% endif %}
+                                {{ form.site_logo }}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Address</label>
+                                {{ form.site_address }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <h6 class="mb-3"><i class="bi bi-link-45deg"></i> Social Media</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label class="form-label"><i class="bi bi-facebook text-primary"></i> Facebook URL</label>
+                                {{ form.facebook_url }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label class="form-label"><i class="bi bi-instagram text-danger"></i> Instagram URL</label>
+                                {{ form.instagram_url }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label class="form-label"><i class="bi bi-linkedin text-primary"></i> LinkedIn URL</label>
+                                {{ form.linkedin_url }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+                    <div class="form-group mb-3">
+                        <label class="form-label">Footer Text</label>
+                        {{ form.footer_text }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom">
+                        <i class="bi bi-check-lg"></i> Save Settings
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card-custom">
+            <div class="card-custom-header">
+                <h5><i class="bi bi-info-circle"></i> Preview</h5>
+            </div>
+            <div class="card-custom-body">
+                <div class="settings-preview">
+                    <div class="preview-item">
+                        <span class="detail-label">Site Name</span>
+                        <span class="detail-value">{{ site_settings.site_name }}</span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">{{ site_settings.site_email|default:"Not set" }}</span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="detail-label">Phone</span>
+                        <span class="detail-value">{{ site_settings.site_phone|default:"Not set" }}</span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="detail-label">Address</span>
+                        <span class="detail-value">{{ site_settings.site_address|default:"Not set" }}</span>
+                    </div>
+                    <hr>
+                    <div class="preview-item">
+                        <span class="detail-label">Social Links</span>
+                        <div class="social-links-preview mt-1">
+                            {% if site_settings.facebook_url %}
+                            <a href="{{ site_settings.facebook_url }}" target="_blank" class="social-link"><i class="bi bi-facebook"></i></a>
+                            {% endif %}
+                            {% if site_settings.instagram_url %}
+                            <a href="{{ site_settings.instagram_url }}" target="_blank" class="social-link"><i class="bi bi-instagram"></i></a>
+                            {% endif %}
+                            {% if site_settings.linkedin_url %}
+                            <a href="{{ site_settings.linkedin_url }}" target="_blank" class="social-link"><i class="bi bi-linkedin"></i></a>
+                            {% endif %}
+                            {% if not site_settings.facebook_url and not site_settings.instagram_url and not site_settings.linkedin_url %}
+                            <span class="text-muted">No social links configured</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

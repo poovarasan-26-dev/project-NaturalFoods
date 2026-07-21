@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard - Natural Foods Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Welcome back! Here's your store overview.</p>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card stat-card-sales">
+            <div class="stat-card-body">
+                <div class="stat-info">
+                    <span class="stat-label">Total Sales</span>
+                    <h2 class="stat-value" data-count="{{ total_sales }}">₹{{ total_sales|floatformat:0 }}</h2>
+                    <span class="stat-badge {% if sales_change >= 0 %}badge-up{% else %}badge-down{% endif %}">
+                        <i class="bi bi-arrow-{% if sales_change >= 0 %}up{% else %}down{% endif %}"></i>
+                        {{ sales_change }}%
+                    </span>
+                </div>
+                <div class="stat-icon">
+                    <i class="bi bi-currency-rupee"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card stat-card-orders">
+            <div class="stat-card-body">
+                <div class="stat-info">
+                    <span class="stat-label">Total Orders</span>
+                    <h2 class="stat-value" data-count="{{ total_orders }}">{{ total_orders }}</h2>
+                    <span class="stat-badge {% if orders_change >= 0 %}badge-up{% else %}badge-down{% endif %}">
+                        <i class="bi bi-arrow-{% if orders_change >= 0 %}up{% else %}down{% endif %}"></i>
+                        {{ orders_change }}%
+                    </span>
+                </div>
+                <div class="stat-icon">
+                    <i class="bi bi-cart3"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card stat-card-products">
+            <div class="stat-card-body">
+                <div class="stat-info">
+                    <span class="stat-label">Total Products</span>
+                    <h2 class="stat-value" data-count="{{ total_products }}">{{ total_products }}</h2>
+                    <span class="stat-badge badge-up">
+                        <i class="bi bi-box"></i> Active
+                    </span>
+                </div>
+                <div class="stat-icon">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card stat-card-customers">
+            <div class="stat-card-body">
+                <div class="stat-info">
+                    <span class="stat-label">Total Customers</span>
+                    <h2 class="stat-value" data-count="{{ total_customers }}">{{ total_customers }}</h2>
+                    <span class="stat-badge {% if customers_change >= 0 %}badge-up{% else %}badge-down{% endif %}">
+                        <i class="bi bi-arrow-{% if customers_change >= 0 %}up{% else %}down{% endif %}"></i>
+                        {{ customers_change }}%
+                    </span>
+                </div>
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-8">
+        <div class="card-custom">
+            <div class="card-custom-header">
+                <h5><i class="bi bi-graph-up"></i> Revenue Overview</h5>
+            </div>
+            <div class="card-custom-body">
+                <canvas id="revenueChart" height="280"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <div class="card-custom">
+            <div class="card-custom-header">
+                <h5><i class="bi bi-pie-chart"></i> Order Status</h5>
+            </div>
+            <div class="card-custom-body">
+                <canvas id="orderStatusChart" height="280"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-6">
+        <div class="card-custom">
+            <div class="card-custom-header">
+                <h5><i class="bi bi-bag-check"></i> Monthly Orders</h5>
+            </div>
+            <div class="card-custom-body">
+                <canvas id="monthlyOrdersChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card-custom">
+            <div class="card-custom-header">
+                <h5><i class="bi bi-person-plus"></i> Customer Growth</h5>
+            </div>
+            <div class="card-custom-body">
+                <canvas id="customerGrowthChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tables Row -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-7">
+        <div class="card-custom">
+            <div class="card-custom-header">
+                <h5><i class="bi bi-star-fill text-warning"></i> Top Products</h5>
+                <a href="{% url 'dash_products' %}" class="btn-link-sm">View All</a>
+            </div>
+            <div class="card-custom-body p-0">
+                <div class="table-responsive">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in top_products %}
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        {% if product.image %}
+                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="table-img">
+                                        {% else %}
+                                        <div class="table-img-placeholder"><i class="bi bi-image"></i></div>
+                                        {% endif %}
+                                        <span>{{ product.name|truncatechars:30 }}</span>
+                                    </div>
+                                </td>
+                                <td><span class="tag tag-category">{{ product.category.name }}</span></td>
+                                <td>₹{{ product.price }}</td>
+                                <td>{{ product.stock }}</td>
+                                <td>
+                                    {% if product.availability == 'in_stock' %}
+                                    <span class="status-badge status-active">In Stock</span>
+                                    {% elif product.availability == 'out_of_stock' %}
+                                    <span class="status-badge status-inactive">Out of Stock</span>
+                                    {% else %}
+                                    <span class="status-badge status-warning">Limited</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center text-muted py-4">No products yet</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-5">
+        <div class="card-custom">
+            <div class="card-custom-header">
+                <h5><i class="bi bi-clock-history"></i> Recent Orders</h5>
+                <a href="{% url 'dash_orders' %}" class="btn-link-sm">View All</a>
+            </div>
+            <div class="card-custom-body p-0">
+                <div class="table-responsive">
+                    <table class="table-custom">
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in recent_orders %}
+                            <tr>
+                                <td><strong>{{ order.order_id }}</strong></td>
+                                <td>{{ order.customer.full_name|truncatechars:20 }}</td>
+                                <td>₹{{ order.total_amount }}</td>
+                                <td>
+                                    {% if order.status == 'delivered' %}
+                                    <span class="status-badge status-active">Delivered</span>
+                                    {% elif order.status == 'cancelled' %}
+                                    <span class="status-badge status-inactive">Cancelled</span>
+                                    {% elif order.status == 'processing' %}
+                                    <span class="status-badge status-warning">Processing</span>
+                                    {% elif order.status == 'shipped' %}
+                                    <span class="status-badge status-info">Shipped</span>
+                                    {% else %}
+                                    <span class="status-badge status-pending">Pending</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-center text-muted py-4">No orders yet</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const labels = {{ chart_labels|safe }};
+        const revenueData = {{ chart_revenue|safe }};
+        const orderData = {{ chart_orders|safe }};
+        const customerData = {{ chart_customers|safe }};
+
+        // Revenue Chart
+        new Chart(document.getElementById('revenueChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Revenue (₹)',
+                    data: revenueData,
+                    borderColor: '#0B5D3B',
+                    backgroundColor: 'rgba(11,93,59,0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#0B5D3B',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Monthly Orders
+        new Chart(document.getElementById('monthlyOrdersChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Orders',
+                    data: orderData,
+                    backgroundColor: 'rgba(39,174,96,0.7)',
+                    borderColor: '#27AE60',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Customer Growth
+        new Chart(document.getElementById('customerGrowthChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Customers',
+                    data: customerData,
+                    borderColor: '#27AE60',
+                    backgroundColor: 'rgba(39,174,96,0.15)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#27AE60',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Order Status Doughnut
+        const statusCounts = {
+            'Delivered': {{ recent_orders|length }},
+        };
+        new Chart(document.getElementById('orderStatusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Delivered', 'Processing', 'Shipped', 'Pending', 'Cancelled'],
+                datasets: [{
+                    data: [40, 25, 15, 12, 8],
+                    backgroundColor: ['#0B5D3B', '#f39c12', '#3498db', '#95a5a6', '#e74c3c'],
+                    borderWidth: 0,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { padding: 12 } } },
+                cutout: '65%',
+            }
+        });
+    });
+</script>
+{% endblock %}

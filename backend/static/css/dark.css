@@ -1,0 +1,336 @@
+/* ═══════════════════════════════════════════════════════════════
+   NATURAL FOODS ADMIN - Dark Mode
+   ═══════════════════════════════════════════════════════════════ */
+
+body.dark-mode {
+    --bg-body: #0f1419;
+    --bg-card: #1a2332;
+    --bg-sidebar: #0a1628;
+    --bg-header: rgba(18,26,38,0.94);
+    --bg-input: #1e293b;
+
+    --text-primary: #e8edf2;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+
+    --border-color: #1e2d3d;
+    --border-light: #1a2535;
+
+    --accent: rgba(11,93,59,0.15);
+    --accent-border: rgba(11,93,59,0.3);
+
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.25);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.35);
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1);
+    --shadow-card-hover: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+/* Sidebar in dark mode */
+body.dark-mode .sidebar {
+    background: #0a1628;
+    border-right: 1px solid var(--border-color);
+}
+
+body.dark-mode .sidebar-header {
+    border-bottom-color: var(--border-color);
+}
+
+body.dark-mode .nav-link:hover {
+    background: rgba(255,255,255,0.06);
+}
+
+body.dark-mode .nav-link.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 2px 12px rgba(11,93,59,0.3);
+}
+
+body.dark-mode .nav-divider {
+    background: var(--border-color);
+}
+
+/* Header in dark mode */
+body.dark-mode .top-header {
+    background: rgba(18,26,38,0.94);
+    border-bottom-color: var(--border-color);
+}
+
+body.dark-mode .icon-btn {
+    background: var(--bg-input);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+body.dark-mode .icon-btn:hover {
+    background: var(--accent);
+    color: var(--secondary-light);
+    border-color: var(--accent-border);
+}
+
+body.dark-mode .theme-toggle {
+    background: var(--bg-input);
+    border-color: var(--border-color);
+}
+
+/* Tables in dark mode */
+body.dark-mode .table-custom thead th {
+    background: rgba(11,93,59,0.08);
+    border-bottom-color: var(--border-color);
+}
+
+body.dark-mode .table-custom tbody td {
+    border-bottom-color: var(--border-light);
+}
+
+body.dark-mode .table-custom tbody tr:hover {
+    background: rgba(255,255,255,0.03);
+}
+
+body.dark-mode .table-img-placeholder {
+    background: var(--bg-input);
+    border-color: var(--border-color);
+}
+
+/* Forms in dark mode */
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+    background: var(--bg-input);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+    background: var(--bg-input);
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(39,174,96,0.15);
+}
+
+body.dark-mode .search-box input {
+    background: var(--bg-input);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+body.dark-mode .search-box input:focus {
+    background: var(--bg-input);
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(39,174,96,0.15);
+}
+
+/* Dropdowns in dark mode */
+body.dark-mode .dropdown-panel {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+
+body.dark-mode .dropdown-header {
+    border-bottom-color: var(--border-color);
+}
+
+body.dark-mode .dropdown-footer {
+    border-top-color: var(--border-color);
+}
+
+body.dark-mode .dropdown-item-msg:hover {
+    background: rgba(255,255,255,0.04);
+}
+
+body.dark-mode .dropdown-item-msg.unread {
+    background: rgba(11,93,59,0.12);
+}
+
+body.dark-mode .profile-dropdown-header {
+    border-bottom-color: var(--border-color);
+}
+
+body.dark-mode .profile-menu-body hr {
+    border-color: var(--border-color);
+}
+
+body.dark-mode .profile-menu-item:hover {
+    background: rgba(255,255,255,0.06);
+}
+
+body.dark-mode .profile-menu-item.text-danger:hover {
+    background: rgba(220,38,38,0.1);
+}
+
+/* Stat Cards in dark mode */
+body.dark-mode .stat-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .stat-card::before {
+    opacity: 0.7;
+}
+
+body.dark-mode .stat-value {
+    color: var(--text-primary);
+}
+
+body.dark-mode .stat-card-sales .stat-icon { background: rgba(11,93,59,0.2); }
+body.dark-mode .stat-card-orders .stat-icon { background: rgba(37,99,235,0.2); }
+body.dark-mode .stat-card-products .stat-icon { background: rgba(217,119,6,0.2); }
+body.dark-mode .stat-card-customers .stat-icon { background: rgba(124,58,237,0.2); }
+
+body.dark-mode .badge-up { background: rgba(5,150,105,0.15); color: #34d399; }
+body.dark-mode .badge-down { background: rgba(220,38,38,0.15); color: #f87171; }
+
+/* Cards in dark mode */
+body.dark-mode .card-custom {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .card-custom-header {
+    border-bottom-color: var(--border-color);
+}
+
+/* Buttons in dark mode */
+body.dark-mode .btn-secondary {
+    background: var(--bg-input);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+body.dark-mode .btn-secondary:hover {
+    background: var(--accent);
+    color: var(--secondary-light);
+    border-color: var(--accent-border);
+}
+
+body.dark-mode .btn-edit {
+    background: rgba(37,99,235,0.15);
+    border-color: rgba(37,99,235,0.25);
+}
+
+body.dark-mode .btn-view {
+    background: rgba(5,150,105,0.15);
+    border-color: rgba(5,150,105,0.25);
+}
+
+body.dark-mode .btn-delete {
+    background: rgba(220,38,38,0.15);
+    border-color: rgba(220,38,38,0.25);
+}
+
+/* Pagination in dark mode */
+body.dark-mode .page-link {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+body.dark-mode .page-link:hover {
+    background: var(--accent);
+    color: var(--secondary-light);
+    border-color: var(--accent-border);
+}
+
+/* Upload area in dark mode */
+body.dark-mode .upload-placeholder {
+    border-color: var(--border-color);
+    background: var(--bg-input);
+}
+
+body.dark-mode .image-upload-area:hover .upload-placeholder {
+    border-color: var(--secondary);
+    background: var(--accent);
+}
+
+/* Tags in dark mode */
+body.dark-mode .tag-category {
+    background: var(--accent);
+    color: var(--secondary-light);
+    border-color: var(--accent-border);
+}
+
+/* Notification items in dark mode */
+body.dark-mode .notification-item:hover {
+    background: rgba(255,255,255,0.03);
+}
+
+body.dark-mode .notification-unread {
+    background: rgba(11,93,59,0.1);
+}
+
+body.dark-mode .notification-content h6 {
+    color: var(--text-primary);
+}
+
+/* Login page dark mode */
+body.dark-mode .login-body {
+    background: linear-gradient(135deg, #0a1628 0%, #061020 50%, #030a15 100%);
+}
+
+body.dark-mode .login-card {
+    background: rgba(26,35,50,0.97);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+body.dark-mode .login-header h1 {
+    color: var(--text-primary);
+}
+
+/* Profile in dark mode */
+body.dark-mode .profile-img-lg {
+    border-color: var(--accent-border);
+}
+
+body.dark-mode .profile-avatar-placeholder {
+    border-color: var(--accent-border);
+}
+
+body.dark-mode .social-link {
+    background: var(--accent);
+    color: var(--secondary-light);
+}
+
+/* Empty state in dark mode */
+body.dark-mode .empty-state i { opacity: 0.3; }
+body.dark-mode .empty-state h5 { color: var(--text-primary); }
+
+/* Detail grid in dark mode */
+body.dark-mode .detail-value {
+    color: var(--text-primary);
+}
+
+/* Message content in dark mode */
+body.dark-mode .message-content {
+    color: var(--text-secondary);
+}
+
+/* Modals in dark mode */
+body.dark-mode .modal-content {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+body.dark-mode .modal-header {
+    border-bottom-color: var(--border-color);
+}
+
+body.dark-mode .modal-footer {
+    border-top-color: var(--border-color);
+}
+
+/* Action btns in dark mode */
+body.dark-mode .action-btns .btn-action {
+    border-color: var(--border-color);
+}
+
+/* Toast in dark mode */
+body.dark-mode .toast {
+    border-color: var(--border-color);
+}
+
+/* Smooth transition for theme switch */
+body, .sidebar, .top-header, .card-custom, .stat-card,
+.form-control, .form-select, .page-content,
+.table-custom, .dropdown-panel, .modal-content {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}

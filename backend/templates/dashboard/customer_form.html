@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if object %}Edit{% else %}Add{% endif %} Customer - Natural Foods Admin{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{% if object %}Edit Customer{% else %}Add Customer{% endif %}</h1>
+        <p class="page-subtitle">{% if object %}Update {{ object.full_name }}{% else %}Add a new customer{% endif %}</p>
+    </div>
+    <a href="{% url 'dash_customers' %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Customers
+    </a>
+</div>
+
+<div class="card-custom">
+    <div class="card-custom-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Full Name</label>
+                                {{ form.full_name }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Email</label>
+                                {{ form.email }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Phone</label>
+                                {{ form.phone }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">Active</label>
+                                <div class="mt-2">{{ form.is_active }} <span class="ms-2">Customer account is active</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label class="form-label">Address</label>
+                        {{ form.address }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label class="form-label">Profile Image</label>
+                        {% if object and object.profile_image %}
+                        <div class="current-image mb-2">
+                            <img src="{{ object.profile_image.url }}" alt="{{ object.full_name }}" class="img-fluid rounded-circle" style="max-height:150px;width:150px;object-fit:cover;display:block;margin:0 auto">
+                        </div>
+                        {% endif %}
+                        <div class="image-upload-area">
+                            {{ form.profile_image }}
+                            <div class="upload-placeholder">
+                                <i class="bi bi-cloud-arrow-up"></i>
+                                <p>Upload photo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions mt-3">
+                <a href="{% url 'dash_customers' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary-custom">
+                    <i class="bi bi-check-lg"></i> {% if object %}Update{% else %}Save{% endif %} Customer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
