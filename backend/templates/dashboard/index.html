@@ -192,6 +192,10 @@
                     <label>Password</label>
                     <input type="password" id="signupPass" placeholder="Create password">
                 </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="signupConfirmPass" placeholder="Confirm password">
+                </div>
                 <div class="error-msg" id="signupError">Registration failed</div>
                 <button class="login-btn" onclick="doSignup()">Sign Up</button>
                 <p class="login-footer">Already have an account? <a href="#" onclick="showLogin()">Sign In</a></p>
@@ -205,23 +209,23 @@
             <p>Organic & Healthy</p>
         </div>
         <nav>
-            <a href="#" class="active" onclick="switchTab('overview')">
+            <a href="#" class="active" onclick="switchTab('overview', this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
                 Overview
             </a>
-            <a href="#" onclick="switchTab('products')">
+            <a href="#" onclick="switchTab('products', this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
                 Products
             </a>
-            <a href="#" onclick="switchTab('orders')">
+            <a href="#" onclick="switchTab('orders', this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                 Orders
             </a>
-            <a href="#" onclick="switchTab('leads')">
+            <a href="#" onclick="switchTab('leads', this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
                 Leads
             </a>
-            <a href="#" onclick="switchTab('messages')">
+            <a href="#" onclick="switchTab('messages', this)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                 Messages
             </a>
@@ -443,7 +447,7 @@
     </div>
 
     <script>
-        const API = 'https://project-naturalfoods.onrender.com';
+        const API = window.location.origin;
         const token = localStorage.getItem('access_token');
 
         if (token) {
@@ -465,7 +469,16 @@
         async function doLogin() {
             const username = document.getElementById('loginUser').value;
             const password = document.getElementById('loginPass').value;
-            document.getElementById('loginError').style.display = 'none';
+            const errorEl = document.getElementById('loginError');
+            const btn = document.querySelector('.login-form .login-btn');
+            errorEl.style.display = 'none';
+            if (!username || !password) {
+                errorEl.textContent = 'Please enter username and password';
+                errorEl.style.display = 'block';
+                return;
+            }
+            btn.textContent = 'Signing in...';
+            btn.disabled = true;
             try {
                 const res = await fetch(API + '/api/auth/login/', {
                     method: 'POST',
@@ -479,12 +492,16 @@
                     document.getElementById('loginPage').style.display = 'none';
                     loadProfile();
                 } else {
-                    document.getElementById('loginError').style.display = 'block';
+                    const data = await res.json();
+                    errorEl.textContent = data.error || 'Invalid username or password';
+                    errorEl.style.display = 'block';
                 }
             } catch (e) {
-                document.getElementById('loginError').textContent = 'Server error. Check connection.';
-                document.getElementById('loginError').style.display = 'block';
+                errorEl.textContent = 'Server error. Check connection.';
+                errorEl.style.display = 'block';
             }
+            btn.textContent = 'Sign In';
+            btn.disabled = false;
         }
 
         async function doSignup() {
@@ -492,12 +509,22 @@
             const email = document.getElementById('signupEmail').value;
             const phone = document.getElementById('signupPhone').value;
             const password = document.getElementById('signupPass').value;
-            document.getElementById('signupError').style.display = 'none';
+            const confirm_password = document.getElementById('signupConfirmPass').value;
+            const errorEl = document.getElementById('signupError');
+            const btn = document.querySelector('.signup-form .login-btn');
+            errorEl.style.display = 'none';
+            if (!username || !email || !password || !confirm_password) {
+                errorEl.textContent = 'Please fill all required fields';
+                errorEl.style.display = 'block';
+                return;
+            }
+            btn.textContent = 'Creating account...';
+            btn.disabled = true;
             try {
                 const res = await fetch(API + '/api/auth/signup/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, email, phone, password })
+                    body: JSON.stringify({ username, email, phone, password, confirm_password })
                 });
                 if (res.ok) {
                     showLogin();
@@ -506,13 +533,16 @@
                     doLogin();
                 } else {
                     const data = await res.json();
-                    document.getElementById('signupError').textContent = data.detail || 'Registration failed';
-                    document.getElementById('signupError').style.display = 'block';
+                    const msg = data.confirm_password?.[0] || data.username?.[0] || data.email?.[0] || data.detail || 'Registration failed';
+                    errorEl.textContent = msg;
+                    errorEl.style.display = 'block';
                 }
             } catch (e) {
-                document.getElementById('signupError').textContent = 'Server error. Check connection.';
-                document.getElementById('signupError').style.display = 'block';
+                errorEl.textContent = 'Server error. Check connection.';
+                errorEl.style.display = 'block';
             }
+            btn.textContent = 'Sign Up';
+            btn.disabled = false;
         }
 
         async function loadProfile() {
@@ -530,17 +560,28 @@
             } catch (e) {}
         }
 
-        function doLogout() {
+        async function doLogout() {
+            const refresh = localStorage.getItem('refresh_token');
+            const access = localStorage.getItem('access_token');
+            if (refresh && access) {
+                try {
+                    await fetch(API + '/api/auth/logout/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + access },
+                        body: JSON.stringify({ refresh: refresh })
+                    });
+                } catch (e) {}
+            }
             localStorage.removeItem('access_token');
             localStorage.removeItem('refresh_token');
             location.reload();
         }
 
-        function switchTab(tab) {
-            document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display = 'none');
+        function switchTab(tab, el) {
+            document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
             document.getElementById('tab-' + tab).style.display = 'block';
             document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            if (el) el.classList.add('active');
             var titles = { overview: 'Overview', products: 'Products', orders: 'Orders', leads: 'Leads', messages: 'Messages' };
             document.getElementById('pageTitle').textContent = titles[tab] || tab;
         }
@@ -548,9 +589,6 @@
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
         }
-
-        if (token) { document.getElementById('loginPage').style.display = 'none'; }
-        else { document.getElementById('loginPage').style.display = 'flex'; }
     </script>
 </body>
 </html>

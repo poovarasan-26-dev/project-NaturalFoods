@@ -27,7 +27,10 @@ FAVICON_PATH = Path(__file__).resolve().parent.parent / "static" / "images" / "f
 
 
 def favicon(request):
-    return FileResponse(open(FAVICON_PATH, "rb"), content_type="image/x-icon")
+    if FAVICON_PATH.exists():
+        return FileResponse(open(FAVICON_PATH, "rb"), content_type="image/x-icon")
+    from django.http import HttpResponseNotFound
+    return HttpResponseNotFound()
 
 
 urlpatterns = [
