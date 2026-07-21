@@ -8,10 +8,9 @@ User = get_user_model()
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ["name", "slug", "category", "description", "price", "unit", "stock", "availability", "image", "is_active"]
+        fields = ["name", "category", "description", "price", "unit", "stock", "availability", "image", "is_active"]
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Product name"}),
-            "slug": forms.TextInput(attrs={"class": "form-control", "placeholder": "product-slug"}),
             "category": forms.Select(attrs={"class": "form-select"}),
             "description": forms.Textarea(attrs={"class": "form-control", "rows": 3, "placeholder": "Product description"}),
             "price": forms.NumberInput(attrs={"class": "form-control", "placeholder": "0.00", "step": "0.01"}),
