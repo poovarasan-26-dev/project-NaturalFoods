@@ -12,7 +12,14 @@ export default function Hero() {
     const section = sectionRef.current;
     if (!video || !section) return;
 
-    const handleScroll = () => {
+    let rafId = null;
+
+    const updateVideo = () => {
+      if (!video.duration) {
+        rafId = requestAnimationFrame(updateVideo);
+        return;
+      }
+
       const rect = section.getBoundingClientRect();
       const sectionHeight = rect.height;
       const windowHeight = window.innerHeight;
@@ -20,14 +27,15 @@ export default function Hero() {
       const scrolled = windowHeight - rect.top;
       const progress = Math.max(0, Math.min(1, scrolled / totalScroll));
 
-      if (video.duration) {
-        video.currentTime = progress * video.duration;
-      }
+      video.currentTime = progress * video.duration;
+      rafId = requestAnimationFrame(updateVideo);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    rafId = requestAnimationFrame(updateVideo);
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
