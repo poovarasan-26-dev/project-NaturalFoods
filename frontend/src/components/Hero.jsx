@@ -21,11 +21,8 @@ export default function Hero() {
       }
 
       const rect = section.getBoundingClientRect();
-      const sectionHeight = rect.height;
-      const windowHeight = window.innerHeight;
-      const totalScroll = sectionHeight + windowHeight;
-      const scrolled = windowHeight - rect.top;
-      const progress = Math.max(0, Math.min(1, scrolled / totalScroll));
+      const scrolled = -Math.min(0, rect.top);
+      const progress = Math.min(1, scrolled / rect.height);
 
       video.currentTime = progress * video.duration;
       rafId = requestAnimationFrame(updateVideo);
