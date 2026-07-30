@@ -1,10 +1,37 @@
+import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FiArrowRight, FiGrid } from 'react-icons/fi';
 
 export default function Hero() {
+  const videoRef = useRef(null);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    const section = sectionRef.current;
+    if (!video || !section) return;
+
+    const handleScroll = () => {
+      const rect = section.getBoundingClientRect();
+      const sectionHeight = rect.height;
+      const windowHeight = window.innerHeight;
+      const totalScroll = sectionHeight + windowHeight;
+      const scrolled = windowHeight - rect.top;
+      const progress = Math.max(0, Math.min(1, scrolled / totalScroll));
+
+      if (video.duration) {
+        video.currentTime = progress * video.duration;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <section className="nf-hero">
+    <section className="nf-hero" ref={sectionRef}>
       <div className="nf-container">
         <div className="nf-hero-grid">
           <motion.div
@@ -63,19 +90,14 @@ export default function Hero() {
           >
             <div className="nf-hero-video-wrapper">
               <div className="nf-hero-image-placeholder">
-                <svg viewBox="0 0 400 400" className="nf-hero-svg">
-                  <defs>
-                    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" style={{ stopColor: '#0B5D3B', stopOpacity: 0.2 }} />
-                      <stop offset="100%" style={{ stopColor: '#27AE60', stopOpacity: 0.1 }} />
-                    </linearGradient>
-                  </defs>
-                  <circle cx="200" cy="200" r="180" fill="url(#grad1)" />
-                  <text x="200" y="180" textAnchor="middle" fontSize="80" fill="#0B5D3B" opacity="0.8">🥬</text>
-                  <text x="130" y="260" textAnchor="middle" fontSize="60" fill="#27AE60" opacity="0.8">🍎</text>
-                  <text x="270" y="260" textAnchor="middle" fontSize="60" fill="#27AE60" opacity="0.8">🍊</text>
-                  <text x="200" y="330" textAnchor="middle" fontSize="50" fill="#0B5D3B" opacity="0.6">🥑</text>
-                </svg>
+                <video
+                  ref={videoRef}
+                  className="nf-hero-video"
+                  src="/images/videoclip.mp4"
+                  muted
+                  playsInline
+                  preload="auto"
+                />
               </div>
               <div className="nf-hero-float-card nf-float-1">
                 <span className="nf-float-emoji">🌿</span>

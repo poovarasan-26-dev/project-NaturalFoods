@@ -542,6 +542,13 @@ input, textarea, select { font-family: inherit; font-size: inherit; }
 
 .nf-hero-svg { width: 100%; height: auto; }
 
+.nf-hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-xl);
+}
+
 .nf-hero-float-card {
   position: absolute;
   background: var(--bg-glass);
