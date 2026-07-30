@@ -433,7 +433,7 @@ class NotificationListView(LoginRequiredMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        return Notification.objects.all()
+        return Notification.objects.filter(notification_type="order")
 
 
 class MarkNotificationReadView(LoginRequiredMixin, View):
@@ -448,7 +448,7 @@ class MarkNotificationReadView(LoginRequiredMixin, View):
 
 class MarkAllNotificationsReadView(LoginRequiredMixin, View):
     def post(self, request):
-        Notification.objects.filter(is_read=False).update(is_read=True)
+        Notification.objects.filter(is_read=False, notification_type="order").update(is_read=True)
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return JsonResponse({"status": "ok"})
         return redirect("dash_notifications")
@@ -514,7 +514,7 @@ class SettingsView(LoginRequiredMixin, View):
 def api_unread_counts(request):
     return JsonResponse({
         "unread_messages": ContactMessage.objects.filter(status="unread").count(),
-        "unread_notifications": Notification.objects.filter(is_read=False).count(),
+        "unread_notifications": Notification.objects.filter(is_read=False, notification_type="order").count(),
     })
 
 
@@ -537,7 +537,7 @@ def api_recent_messages(request):
 
 @login_required
 def api_recent_notifications(request):
-    notifs = Notification.objects.order_by("-created_at")[:10]
+    notifs = Notification.objects.filter(notification_type="order").order_by("-created_at")[:10]
     data = [
         {
             "id": n.id,

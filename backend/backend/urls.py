@@ -26,6 +26,7 @@ urlpatterns = [
     path("favicon.ico", favicon),
     path("admin/", admin.site.urls),
     path("api/auth/", include("users.urls")),
+    path("api/", include("dashboard.api_urls")),
     path("dashboard/", include("dashboard.urls")),
 ]
 

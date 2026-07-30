@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
 from .serializers import SignupSerializer, UserSerializer
+from dashboard.models import Customer, Notification
 
 
 class SignupView(generics.CreateAPIView):
@@ -15,6 +16,27 @@ class SignupView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+
+        customer, created = Customer.objects.get_or_create(
+            email=user.email,
+            defaults={
+                "user": user,
+                "full_name": user.username,
+                "phone": user.phone or "",
+            },
+        )
+        if not created and not customer.user:
+            customer.user = user
+            customer.full_name = user.username
+            customer.phone = user.phone or ""
+            customer.save()
+
+        Notification.objects.create(
+            title="New Customer Registered",
+            description=f'Customer "{user.username}" has registered via the website.',
+            notification_type="order",
+        )
+
         refresh = RefreshToken.for_user(user)
         return Response(
             {
