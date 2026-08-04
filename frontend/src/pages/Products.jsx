@@ -10,8 +10,9 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+
   const searchQuery = searchParams.get('search') || '';
+  const selectedCategory = searchParams.get('category') || '';
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -24,10 +25,6 @@ export default function Products() {
     };
     fetchCategories();
   }, []);
-
-  useEffect(() => {
-    setSelectedCategory(searchParams.get('category') || '');
-  }, [searchParams]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -58,12 +55,9 @@ export default function Products() {
   };
 
   const handleCategoryFilter = (slug) => {
-    setSelectedCategory(slug);
-    const params = new URLSearchParams(searchParams);
+    const params = new URLSearchParams();
     if (slug) {
       params.set('category', slug);
-    } else {
-      params.delete('category');
     }
     setSearchParams(params);
   };
